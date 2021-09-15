@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="CSS/bootstrap.min.css" />
+    <title>Liquidacion Empleados</title>
+  </head>
+  <body>
+    <div id="app" class="container">
+      <h1>Liquidación de salario</h1>
+      <hr />
+      <div><p>Usuario por favor ingrese sus credenciales para acceder!</p></div>
+      <label> Cargo <input v-model="titleEntered" type="text" /> </label>
+      <label> Clave <input v-model="passwordEntered" type="password" /> </label>
+      <button @click="login" class="btn btn-dark btn-md">Ingresar</button>
+      <hr />
+
+      <!-- display error -->
+      <div id="error"></div>
+
+      <!-- seccion de administrador -->
+      <div v-if="employeeCode==1">
+        <div>
+          Salario Base:
+          <select v-model.number="filterBy">
+            <option value="0" selected>Seleccione una</option>
+            <option value="1">Secretario</option>
+            <option value="2">Vendedor</option>
+            <option value="3">Ensamblador</option>
+          </select>
+          <input v-model.number="baseSalary" type="number" />
+        </div>
+        <br />
+        <div>
+          Cantidad maxima de zapatos a ensamblar:
+          <input v-model.number="inputTwo" type="number" />
+        </div>
+        <br />
+        <div>
+          Cantidad maxima de zapatillas a ensamblar:
+          <input v-model.number="inputThree" type="number" />
+        </div>
+        <br />
+        <div>
+          Precio de ensamble de Zapatos:
+          <input v-model.number="inputFour" type="number" />
+        </div>
+        <br />
+        <div>
+          Precio de ensamble de Zapatillas:
+          <input v-model.number="inputFive" type="number" />
+        </div>
+        <br />
+        <div>
+          Comision por ventas realizadas:
+          <input v-model.number="inputSix" type="number" />
+        </div>
+        <br />
+        <div>
+          <button @click="renderData" class="btn btn-dark btn-md">Actualizar</button>
+          <button @click="exit" class="btn btn-secondary btn-md">Salir</button>
+        </div>
+      </div>
+
+      <!-- seccion de secretario -->
+      <div v-if="employeeCode==2">
+        <p>Liquida tu salario aqui!</p>
+        <div>Horas extras <input v-model.number="inputSeven" type="number" /></div>
+        <br />
+        <div>
+          <button @click="secretaryWage" class="btn btn-dark btn-md" type="button">
+            Liquidar Salario
+          </button>
+          <button @click="exit" class="btn btn-secondary btn-md">Salir</button>
+        </div>
+        <br />
+      </div>
+
+      <!-- seccion de vendedor -->
+      <div v-if="employeeCode==3">
+        <p>Liquida tu salario aqui!</p>
+        <div>Monto de Ventas Facturadas: <input v-model.number="inputEight" type="number" /></div>
+        <br />
+        <div>
+          <button @click="salesmanWage" class="btn btn-dark btn-md">Liquidar Salario</button>
+          <button @click="exit" class="btn btn-secondary btn-md">Salir</button>
+        </div>
+        <br />
+      </div>
+
+      <!-- seccion de ensamblador -->
+      <div v-if="employeeCode==4">
+        <p>Liquida tu salario aqui!</p>
+        <div>Horas extra: <input v-model.number="inputNine" type="number" /></div>
+        <br />
+        <div>Zapatos ensamblados: <input v-model.number="inputTen" type="number" /></div>
+        <br />
+        <div>Zapatillas ensamblados: <input v-model.number="inputEleven" type="number" /></div>
+        <br />
+        <div>
+          Si tiene hijos por favor indique cuantos tiene:
+          <input v-model.number="inputTwelve" type="number" />
+        </div>
+        <br />
+        <div>
+          <button @click="ensambleWage" class="btn btn-dark btn-md">Liquidar Salario</button>
+          <button @click="exit" class="btn btn-secondary btn-md">Salir</button>
+        </div>
+        <br />
+      </div>
+
+      <!-- formularios -->
+
+      <!-- secretario -->
+      <div v-if="formShow==1">
+        <h4 class="text-muted">Liquidacion</h4>
+
+        <table class="table table-striped table-hover">
+          <thead>
+            <tr>
+              <th>Cargo</th>
+              <th>Salario Base</th>
+              <th>Valor hora</th>
+              <th>Horas Extra</th>
+              <th>Valor Hora Extra</th>
+              <th>Total</th>
+            </tr>
+          </thead>
+
+          <tbody>
+            <tr v-for="item in secretarioArray">
+              <td v-text="item.cargo"></td>
+              <td v-text="item.salario_base"></td>
+              <td v-text="item.valorHora"></td>
+              <td v-text="item.horasExtra"></td>
+              <td v-text="item.valorHoraExtra"></td>
+              <td v-text="item.total"></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- vendedor -->
+      <div v-if="formShow==2">
+        <h4 class="text-muted">Liquidacion</h4>
+
+        <table class="table table-striped table-hover">
+          <thead>
+            <tr>
+              <th>Cargo</th>
+              <th>Salario Base</th>
+              <th>Ventas Facturadas</th>
+              <th>% Comision de Ventas</th>
+              <th>Valor hora</th>
+              <th>Subsidio de Transporte</th>
+              <th>Total</th>
+            </tr>
+          </thead>
+
+          <tbody>
+            <tr v-for="item in salesmanArray">
+              <td v-text="item.cargo"></td>
+              <td v-text="item.salarioBase"></td>
+              <td v-text="item.ventasFacturadas"></td>
+              <td v-text="item.comisionVentas"></td>
+              <td v-text="item.valorHora"></td>
+              <td v-text="item.subsidioTransporte"></td>
+              <td v-text="item.total"></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- ensamblador -->
+      <div v-if="formShow==3">
+        <h4 class="text-muted">Liquidacion</h4>
+
+        <table class="table table-striped table-hover">
+          <thead>
+            <tr>
+              <th>Cargo</th>
+              <th>Salario Base</th>
+              <th>Horas Extras</th>
+              <th>Valor Hora Extra</th>
+              <th>Zapatos Ensamblados</th>
+              <th>Zapatillas Ensamblados</th>
+              <th>Bono por Hijo(s)</th>
+              <th>Subsidio de Transporte</th>
+              <th>Total</th>
+            </tr>
+          </thead>
+
+          <tbody>
+            <tr v-for="item in ensambleManArray">
+              <td v-text="item.cargo"></td>
+              <td v-text="item.salarioBase"></td>
+              <td v-text="item.horasExtra"></td>
+              <td v-text="item.valorHoraExtra"></td>
+              <td v-text="item.zapatosEnsamblados"></td>
+              <td v-text="item.zapatillasEnsamblados"></td>
+              <td v-text="item.bonoHijos"></td>
+              <td v-text="item.subsidioTransporte"></td>
+              <td v-text="item.total"></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <script src="JS/vue.js"></script>
+    <script src="JS/app.js"></script>
+  </body>
+</html>
